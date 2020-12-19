@@ -1,17 +1,41 @@
+import { gql, useMutation } from "@apollo/client";
+import React from "react";
 import { useForm } from "react-hook-form";
+import { FormError } from "../components/form-error";
+import {
+  LoginMutation,
+  LoginMutationVariables,
+} from "../__generated__/LoginMutation";
 
 interface ILoginForm {
   email?: string;
   password?: string;
 }
 
+const LOGIN_MUTATION = gql`
+  mutation LoginMutation($loginInput: LoginInput!) {
+    login(input: $loginInput) {
+      ok
+      token
+      error
+    }
+  }
+`;
+
 export const Login = () => {
+  const [loginMutation, { loading, error, data }] = useMutation<
+    LoginMutation,
+    LoginMutationVariables
+  >(LOGIN_MUTATION);
   const { register, getValues, errors, handleSubmit } = useForm<ILoginForm>({
     mode: "onChange",
   });
 
   const onSubmit = () => {
-    console.log("submittedf");
+    const { email, password } = getValues();
+    if (email && password) {
+      loginMutation({ variables: { loginInput: { email, password } } });
+    }
   };
 
   return (
@@ -35,14 +59,10 @@ export const Login = () => {
           />
 
           {errors.email?.type === "pattern" && (
-            <span className="font-medium text-red-500">
-              Please enter a valid email address
-            </span>
+            <FormError errorMessage={"Please enter a valid email"} />
           )}
           {errors.email?.message && (
-            <span className="font-medium text-red-500">
-              {errors.email?.message}
-            </span>
+            <FormError errorMessage={errors.email?.message} />
           )}
           <input
             ref={register({ required: "Password is required" })}
@@ -54,7 +74,7 @@ export const Login = () => {
           />
           {errors.password?.message && (
             <span className="font-medium text-red-500">
-              {errors.password?.message}
+              <FormError errorMessage={errors.password?.message} />
             </span>
           )}
           <button className="mt-3 btn">Login</button>
