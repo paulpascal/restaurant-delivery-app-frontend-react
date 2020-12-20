@@ -6,6 +6,11 @@ import {
   LoginMutation,
   LoginMutationVariables,
 } from "../__generated__/LoginMutation";
+import deliveryAppLogo from "../images/logo.svg";
+import { Link } from "react-router-dom";
+import { Button } from "../components/button";
+import { Helmet } from "react-helmet";
+import { isLoggedInVar } from "../apollo";
 
 interface ILoginForm {
   email?: string;
@@ -23,7 +28,13 @@ const LOGIN_MUTATION = gql`
 `;
 
 export const Login = () => {
-  const { register, getValues, errors, handleSubmit } = useForm<ILoginForm>({
+  const {
+    register,
+    getValues,
+    errors,
+    handleSubmit,
+    formState,
+  } = useForm<ILoginForm>({
     mode: "onChange",
   });
 
@@ -32,7 +43,8 @@ export const Login = () => {
       login: { ok, token },
     } = data;
     if (ok) {
-      console.log(token);
+      console.log("token");
+      isLoggedInVar(true);
     }
   };
   const onError = (error: ApolloError) => {};
@@ -52,11 +64,17 @@ export const Login = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-800">
-      <div className="bg-white w-full max-w-lg pt-5 pb-7 rounded-lg text-center">
-        <h3 className="text-2xl text-gray-800">Log in</h3>
+    <div className="h-screen flex items-center flex-col mt-10 lg:mt-28">
+      <Helmet>
+        <title>Login | Delivery app</title>
+      </Helmet>
+      <div className="w-full max-w-screen-sm flex flex-col px-5 items-center">
+        <img src={deliveryAppLogo} className="w-52 mb-10" alt="Delivery app" />
+        <h4 className="w-full font-medium text-left text-3xl mb-5">
+          Welcome back
+        </h4>
         <form
-          className="grid gap-3 mt-5 px-5"
+          className="grid gap-3 mt-5 w-full mb-5"
           onSubmit={handleSubmit(onSubmit)}
         >
           <input
@@ -90,11 +108,21 @@ export const Login = () => {
               <FormError errorMessage={errors.password?.message} />
             </span>
           )}
-          <button className="mt-3 btn">{loading ? "Loading" : "Login"}</button>
+          <Button
+            canClick={formState.isValid}
+            loading={loading}
+            actionText={"Log in"}
+          />
           {loginMutationResult?.login.error && (
             <FormError errorMessage={loginMutationResult?.login.error} />
           )}
         </form>
+        <div>
+          New to Delivery app?{" "}
+          <Link to="/create-account" className="text-lime-600 hover:underline">
+            Create an Account
+          </Link>
+        </div>
       </div>
     </div>
   );
