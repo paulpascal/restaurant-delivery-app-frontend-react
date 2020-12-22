@@ -8,11 +8,15 @@ import {
 import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
 import { Restaurants } from "../pages/client/restaurants";
+import { ConfirmEmail } from "../pages/user/confirm-email";
 import { UserRole } from "../__generated__/globalTypes";
 
 const ClientRoutes = [
-  <Route path="/" exact>
+  <Route path="/" exact key={1}>
     <Restaurants />
+  </Route>,
+  <Route path="/confirm" exact key={2}>
+    <ConfirmEmail />
   </Route>,
 ];
 
