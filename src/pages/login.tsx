@@ -9,8 +9,9 @@ import {
 import deliveryAppLogo from "../images/logo.svg";
 import { Link } from "react-router-dom";
 import { Button } from "../components/button";
-import { Helmet } from "react-helmet";
-import { isLoggedInVar } from "../apollo";
+import { Helmet } from "react-helmet-async";
+import { authTokenVar, isLoggedInVar } from "../apollo";
+import { LOCAL_STORAGE_TOKEN } from "../constants";
 
 interface ILoginForm {
   email?: string;
@@ -42,8 +43,9 @@ export const Login = () => {
     const {
       login: { ok, token },
     } = data;
-    if (ok) {
-      console.log("token");
+    if (ok && token) {
+      localStorage.setItem(LOCAL_STORAGE_TOKEN, token);
+      authTokenVar(token);
       isLoggedInVar(true);
     }
   };

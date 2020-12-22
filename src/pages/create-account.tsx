@@ -9,7 +9,7 @@ import {
 import deliveryAppLogo from "../images/logo.svg";
 import { Link, useHistory } from "react-router-dom";
 import { Button } from "../components/button";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { CreateAccountInput, UserRole } from "../__generated__/globalTypes";
 import {
   CreateAccountMutation,
@@ -62,7 +62,8 @@ export const CreateAccount = () => {
       createAccount: { ok, error },
     } = data;
     if (ok) {
-      history.push("/login");
+      alert("Account created login now");
+      history.push("/");
     }
   };
 
