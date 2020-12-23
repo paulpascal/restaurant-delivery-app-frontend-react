@@ -1,3 +1,132 @@
+import { gql, useQuery } from "@apollo/client";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { Link, useHistory } from "react-router-dom";
+import { Restaurant } from "../../components/restaurant";
+import { RESTAURANT_FRAGMENT } from "../../fragments";
+import {
+  restaurantsPageQuery,
+  restaurantsPageQueryVariables,
+} from "../../__generated__/restaurantsPageQuery";
+
+interface IFormProps {
+  searchTerm: string;
+}
+
+const RESTAURANTS_QUERY = gql`
+  query restaurantsPageQuery($input: RestaurantsInput!) {
+    allCategories {
+      ok
+      error
+      categories {
+        id
+        name
+        coverImage
+        slug
+        restaurantCount
+      }
+    }
+
+    restaurants(input: $input) {
+      ok
+      error
+      totalPages
+      totalResults
+      results {
+        ...RestaurantParts
+      }
+    }
+  }
+  ${RESTAURANT_FRAGMENT}
+`;
+
 export const Restaurants = () => {
-  return <h1>asdf</h1>;
+  const [page, setPage] = React.useState(1);
+  const history = useHistory();
+  const { data, loading } = useQuery<
+    restaurantsPageQuery,
+    restaurantsPageQueryVariables
+  >(RESTAURANTS_QUERY, { variables: { input: { page } } });
+  const { register, handleSubmit, getValues } = useForm<IFormProps>();
+
+  const onNextPageClick = () => setPage((current) => current + 1);
+  const onPrevPageClick = () => setPage((current) => current - 1);
+  const onSearchSubmit = () => {
+    const { searchTerm } = getValues();
+    history.push({
+      pathname: "/search",
+      search: `?term=${searchTerm}`,
+    });
+  };
+  return (
+    <div>
+      <form
+        onSubmit={handleSubmit(onSearchSubmit)}
+        className="bg-gray-800 w-full py-40 flex items-center justify-center"
+      >
+        <input
+          ref={register({ required: true, min: 3 })}
+          name="searchTerm"
+          type="Search"
+          className="input rounded-md border-0 w-3/4 md:w-3/12"
+          placeholder="Search restaurants..."
+        />
+      </form>
+      {!loading && (
+        <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
+          <div className="flex justify-around xs:max-w-sm mx-auto flex-wrap">
+            {data?.allCategories.categories?.map((category) => (
+              <Link key={category.id} to={`/category/${category.slug}`}>
+                <div className="flex flex-col group items-center cursor-pointer px-4">
+                  <div
+                    className=" w-16 h-16 bg-cover bg-gray-800 group-hover:bg-gray-100 rounded-full"
+                    style={{ backgroundImage: `url(${category.coverImage})` }}
+                  ></div>
+                  <span className="mt-1 text-sm text-center font-medium">
+                    {category.name}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
+            {data?.restaurants.results?.map((restaurant) => (
+              <Restaurant
+                key={restaurant.id}
+                id={restaurant.id + ""}
+                coverImage={restaurant.coverImage}
+                name={restaurant.name}
+                categoryName={restaurant.category?.name}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="grid grid-cols-3 text-center max-w-md items-center mx-auto mt-10">
+        {page > 1 ? (
+          <button
+            onClick={onPrevPageClick}
+            className="focus:outline-none font-medium text-2xl"
+          >
+            &larr;
+          </button>
+        ) : (
+          <div></div>
+        )}
+        <span>
+          Page {page} of {data?.restaurants.totalPages}
+        </span>
+        {page !== data?.restaurants.totalPages ? (
+          <button
+            onClick={onNextPageClick}
+            className="focus:outline-none font-medium text-2xl"
+          >
+            &rarr;
+          </button>
+        ) : (
+          <div></div>
+        )}
+      </div>
+    </div>
+  );
 };
