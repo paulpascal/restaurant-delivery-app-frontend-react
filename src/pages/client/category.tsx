@@ -1,17 +1,14 @@
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { useHistory, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Restaurant } from "../../components/restaurant";
-import { RESTAURANT_FRAGMENT } from "../../fragments";
-import {
-  searchRestaurant,
-  searchRestaurantVariables,
-} from "../../__generated__/searchRestaurant";
+import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragments";
+import { category, categoryVariables } from "../../__generated__/category";
 
-const SEARCH_RESTAURANT = gql`
-  query searchRestaurant($input: SearchRestaurantInput!) {
-    searchRestaurant(input: $input) {
+const CATEGORY_QUERY = gql`
+  query category($input: CategoryInput!) {
+    category(input: $input) {
       ok
       error
       totalPages
@@ -19,47 +16,45 @@ const SEARCH_RESTAURANT = gql`
       restaurants {
         ...RestaurantParts
       }
+      category {
+        ...CategoryParts
+      }
     }
   }
   ${RESTAURANT_FRAGMENT}
+  ${CATEGORY_FRAGMENT}
 `;
 
-export const Search = () => {
-  const location = useLocation();
-  const history = useHistory();
-  const [page, setPage] = React.useState(1);
-  const [callQuery, { loading, data, called }] = useLazyQuery<
-    searchRestaurant,
-    searchRestaurantVariables
-  >(SEARCH_RESTAURANT);
+interface ICategoryParams {
+  slug: string;
+}
 
-  React.useEffect(() => {
-    const [_, query] = location.search.split("?term=");
-    if (!query) {
-      return history.replace("/");
-    }
-    callQuery({
+export const Category = () => {
+  const params = useParams<ICategoryParams>();
+  const [page, setPage] = React.useState(1);
+  const { data, loading } = useQuery<category, categoryVariables>(
+    CATEGORY_QUERY,
+    {
       variables: {
         input: {
           page,
-          query,
+          slug: params.slug,
         },
       },
-    });
-  }, [page]);
+    }
+  );
 
   const onNextPageClick = () => setPage((current) => current + 1);
   const onPrevPageClick = () => setPage((current) => current - 1);
-
   return (
     <div>
       <Helmet>
-        <title>Search | Delivery app</title>
+        <title>Category | Delivery app</title>
       </Helmet>
-      {!loading && data?.searchRestaurant.restaurants && (
+      {!loading && data?.category.restaurants && (
         <div className="max-w-screen-2xl pb-20 mx-auto mt-8">
           <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
-            {data?.searchRestaurant?.restaurants?.map((restaurant) => (
+            {data?.category.restaurants.map((restaurant) => (
               <Restaurant
                 key={restaurant.id}
                 id={restaurant.id + ""}
@@ -83,9 +78,9 @@ export const Search = () => {
           <div></div>
         )}
         <span>
-          Page {page} of {data?.searchRestaurant.totalPages}
+          Page {page} of {data?.category.totalPages}
         </span>
-        {page !== data?.searchRestaurant.totalPages ? (
+        {page !== data?.category.totalPages ? (
           <button
             onClick={onNextPageClick}
             className="focus:outline-none font-medium text-2xl"
