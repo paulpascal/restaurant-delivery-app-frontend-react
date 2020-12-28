@@ -3,7 +3,8 @@
         "allowJs": true,
         "baseUrl": "../node-modules",
         "types": [
-            "cypress"
+            "cypress",
+            "@testing-library/cypress"
         ],
         "outDir": "#"
     },
