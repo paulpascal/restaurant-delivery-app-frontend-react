@@ -2,10 +2,6 @@ import { ApolloError, gql, useMutation } from "@apollo/client";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { FormError } from "../components/form-error";
-import {
-  LoginMutation,
-  LoginMutationVariables,
-} from "../__generated__/LoginMutation";
 import deliveryAppLogo from "../images/logo.svg";
 import { Link, useHistory } from "react-router-dom";
 import { Button } from "../components/button";
@@ -22,7 +18,7 @@ interface ICreateAccountForm {
   role: UserRole;
 }
 
-const CREATE_ACCOUNT_MUTATION = gql`
+export const CREATE_ACCOUNT_MUTATION = gql`
   mutation CreateAccountMutation($createAccountInput: CreateAccountInput!) {
     createAccount(input: $createAccountInput) {
       ok

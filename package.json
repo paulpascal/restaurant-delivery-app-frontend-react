@@ -20,6 +20,7 @@
     "autoprefixer": "^10.1.0",
     "graphql": "^15.4.0",
     "i": "^0.3.6",
+    "mock-apollo-client": "^1.0.0",
     "postcss": "^8.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -37,6 +38,7 @@
     "start": "npm run tailwind:build & react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "npm test -- --coverage --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -55,6 +57,13 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "./src/components/**/*.tsx",
+      "./src/pages/**/*.tsx",
+      "./src/routers/**/*.tsx"
     ]
   }
 }

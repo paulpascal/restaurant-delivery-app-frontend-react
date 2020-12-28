@@ -18,7 +18,7 @@ interface ILoginForm {
   password?: string;
 }
 
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
   mutation LoginMutation($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
