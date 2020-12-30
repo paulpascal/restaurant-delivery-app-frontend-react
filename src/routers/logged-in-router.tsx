@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Category } from "../pages/client/category";
 import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
@@ -15,26 +10,42 @@ import { ConfirmEmail } from "../pages/user/confirm-email";
 import { EditProfile } from "../pages/user/edit-profile";
 import { UserRole } from "../__generated__/globalTypes";
 import { Restaurant } from "../pages/client/restaurant";
+import { MyRestaurants } from "../pages/owner/my-restaurants";
+import { AddRestaurant } from "../pages/owner/add-restaurant";
+import { MyRestaurant } from "../pages/owner/my-restaurant";
+import { AddDish } from "../pages/owner/add-dish";
 
-const ClientRoutes = [
-  <Route path="/" exact key={1}>
-    <Restaurants />
-  </Route>,
-  <Route path="/confirm" exact key={2}>
-    <ConfirmEmail />
-  </Route>,
-  <Route path="/edit-profile" exact key={3}>
-    <EditProfile />
-  </Route>,
-  <Route path="/search" key={4}>
-    <Search />
-  </Route>,
-  <Route path="/category/:slug" key={5}>
-    <Category />
-  </Route>,
-  <Route path="/restaurants/:id" key={6}>
-    <Restaurant />
-  </Route>,
+const clientRoutes = [
+  {
+    path: "/",
+    component: <Restaurants />,
+  },
+  {
+    path: "/search",
+    component: <Search />,
+  },
+  {
+    path: "/category/:slug",
+    component: <Category />,
+  },
+  {
+    path: "/restaurants/:id",
+    component: <Restaurant />,
+  },
+];
+
+const restaurantRoutes = [
+  { path: "/restaurants", component: <MyRestaurants /> },
+  { path: "/restaurants/:id", component: <MyRestaurant /> },
+  { path: "/add-restaurant", component: <AddRestaurant /> },
+  { path: "/", component: <Restaurants /> },
+  { path: "/restaurants/:restaurantId/add-dish", component: <AddDish /> },
+];
+
+const commonRoutes = [
+  { path: "/confirm", component: <ConfirmEmail /> },
+  { path: "/edit-profile", component: <EditProfile /> },
+  // { path: "/orders/:id", component: <Order /> },
 ];
 
 export const LoggedInRouter = () => {
@@ -53,7 +64,23 @@ export const LoggedInRouter = () => {
     <Router>
       <Header />
       <Switch>
-        {data.me.role === UserRole.Client && ClientRoutes}
+        {data.me.role === UserRole.Client &&
+          clientRoutes.map((route) => (
+            <Route exact key={route.path} path={route.path}>
+              {route.component}
+            </Route>
+          ))}
+        {data.me.role === UserRole.Owner &&
+          restaurantRoutes.map((route) => (
+            <Route exact key={route.path} path={route.path}>
+              {route.component}
+            </Route>
+          ))}
+        {commonRoutes.map((route) => (
+          <Route key={route.path} path={route.path}>
+            {route.component}
+          </Route>
+        ))}
         <Route>
           <NotFound />
         </Route>
