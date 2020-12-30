@@ -99,10 +99,10 @@ export const MyRestaurant = () => {
   const triggerPaddle = () => {
     if (userData?.me.email) {
       // @ts-ignore
-      window.Paddle.Setup({ vendor: 31465 });
+      window.Paddle.Setup({ vendor: 0 });
       // @ts-ignore
       window.Paddle.Checkout.open({
-        product: 638793,
+        product: 0,
         email: userData.me.email,
         successCallback: (data: any) => {
           createPaymentMutation({
