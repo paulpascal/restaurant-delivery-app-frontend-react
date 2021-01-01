@@ -11,6 +11,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@types/google-map-react": "^2.1.0",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
@@ -20,6 +21,7 @@
     "apollo": "^2.32.0",
     "autoprefixer": "^10.1.0",
     "cypress": "^6.2.0",
+    "google-map-react": "^2.1.9",
     "graphql": "^15.4.0",
     "i": "^0.3.6",
     "mock-apollo-client": "^1.0.0",
@@ -30,6 +32,7 @@
     "react-hook-form": "^6.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "subscriptions-transport-ws": "^0.9.18",
     "tailwindcss": "^2.0.2",
     "typescript": "^4.0.3",
     "victory": "^35.4.4",
@@ -69,5 +72,8 @@
       "./src/pages/**/*.tsx",
       "./src/routers/**/*.tsx"
     ]
+  },
+  "devDependencies": {
+    "@types/googlemaps": "^3.43.0"
   }
 }
